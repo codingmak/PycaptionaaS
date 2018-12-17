@@ -69,7 +69,7 @@ def user_input():
 		return "<h1> AssetID: {} Format: {} TextString: {}".format(assetid,outgoing_format,text_string)
 		
 	except (ValueError,KeyError, TypeError) as e:
-		print("Failed ",e)
+		print("Failed: ",e)
  
 
 # # #view the file that is converted and parse the json file to output to view.	

@@ -33,8 +33,7 @@ caps = '''100:00:01,500 --> 00:00:12,345 Small caption'''
 
 
 
-# #This will take the input json parse it and find the Format key.  
-# #Takes the value and depending on format uses pycaption to convert
+#Detects format
 def format_check(text):
 
 	reader = detect_format(text)
@@ -46,7 +45,7 @@ def format_check(text):
 		elif SCCReader().detect(text):
 			return "scc"
 
-#Convert file type to outgoing file type
+#Convert file type to the format specified file type
 def converter(text_string,outgoing_format):
 	
 	return {
@@ -100,7 +99,7 @@ def user_input():
 
 
 if __name__ == '__main__':
-	#print(format_check(caps))
+	
 	
 	print("\n\n\n")
 	app.run(debug=True)

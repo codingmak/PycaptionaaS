@@ -3,7 +3,7 @@ from flask import Flask,request,jsonify
 from pycaption import *
 
 import json
-from colorama import Fore
+
 
 app = Flask(__name__)
 
@@ -30,6 +30,9 @@ POST returns JSON
 caps = '''100:00:01,500 --> 00:00:12,345 Small caption'''
 
 
+
+
+
 # #This will take the input json parse it and find the Format key.  
 # #Takes the value and depending on format uses pycaption to convert
 def format_check(text):
@@ -37,15 +40,24 @@ def format_check(text):
 	reader = detect_format(text)
 	if reader:
 		if SRTReader().detect(text):
-			return SAMIWriter().write(SRTReader().read(text))
+			return "srt"
 		elif DFXPReader().detect(text):
-			return SAMIWriter().write(DFXPReader().read(text))
+			return "dfxp"
 		elif SCCReader().detect(text):
-			return SAMIWriter().write(SCCReader().read(text))
+			return "scc"
 
+#Convert file type to outgoing file type
+def converter(text_string,outgoing_format):
+	
+	return {
+		'srt': SAMIWriter().write(SRTReader().read(text_string)),
+		'dfxp': SAMIWriter().write(DFXPReader().read(caps)),
+		'scc':SAMIWriter().write(SCCReader().read(caps))
+	}.get(outgoing_format)()
 
+	pass
 
-@app.route("/test", methods=["POST","GET"])
+@app.route("/test", methods=["POST"])
 def user_input():
 
 	try:
@@ -54,34 +66,34 @@ def user_input():
 			data = request.get_json()
 			print("\n\nThis is the post request from user: {}\n\n".format(data))
 	
-			global assetid,incoming_format,outgoing_format,text_string
+			
 			assetid = data['AssetID']
-			incoming_format = data['InFormat']
-			outgoing_format = data['OutFormat']
+			incoming_format = data['InFormat'].lower()
+			outgoing_format = data['OutFormat'].lower()
 			text_string = data['TextString']
 
-			if assetid and incoming_format and outgoing_format and text_string:
 
-				print("This is the text_string {}".format(text_string))
+			if assetid and incoming_format and outgoing_format and text_string:
+				# try:
+				format_type = format_check(text_string)
+				if format_type == incoming_format:
+					print("Matched")
+					converted = converter(text_string,outgoing_format)
+
 				
+				print("format_type: {}".format(format_type))
 				#return jsonify({"AssetID": assetid,'InFormat': incoming_format,'TextString':text_string,'OutFormat': outgoing_format})
+				#return "<h1> AssetID: {} Format: {} TextString: {}".format(assetid,outgoing_format,text_string)
 				return jsonify({"AssetID": assetid,'Format': outgoing_format,'TextString':text_string})
-		return "<h1> AssetID: {} Format: {} TextString: {}".format(assetid,outgoing_format,text_string)
+
+			 
+		
+				# except Exception:
+				# 	return "\nError with text string format type it doesnt exist\n"
 		
 	except (ValueError,KeyError, TypeError) as e:
-		print("Failed: ",e)
+		print("Failed: ", e)
  
-
-# # #view the file that is converted and parse the json file to output to view.	
-# # @app.route("/view",methods=["GET"])
-# # def view_converted():
-# # 	assetid = request.form['AssetID']
-# # 	formatted = request.form['Format']
-# # 	text_string = request.form['TextString'] 
-
-
-
-# 	return '<h1>AssetID: {} Formatted: {} TextString: {}</h1>'.format(assetid,formatted,text_string)
 
 
 

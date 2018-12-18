@@ -1,8 +1,6 @@
 from flask import Flask,request,jsonify
 
-from pycaption import *
-
-import json
+from pycaption import detect_format, SRTReader, DFXPReader, SCCReader,SAMIWriter
 
 
 app = Flask(__name__)
@@ -17,8 +15,6 @@ AssetID = Property.Ep
 TextString = .SCC file with line breaks
 InFormat = what you are sending
 OutFormat = what you want back
-
-
 POST returns JSON
 ‘AssetID’ = 123456.001 (AssetID),
 ‘Format’ = string for what the format
@@ -36,15 +32,14 @@ Small caption'''
 
 #Detects format
 def format_check(text):
-
-	reader = detect_format(text)
-	if reader:
-		if SRTReader().detect(text):
-			return "srt"
-		elif DFXPReader().detect(text):
-			return "dfxp"
-		elif SCCReader().detect(text):
-			return "scc"
+    reader = detect_format(text)
+    if reader:
+        if SRTReader().detect(text):
+            return "srt"
+        elif DFXPReader().detect(text):
+            return "dfxp"
+        elif SCCReader().detect(text):
+            return "scc"
 
 #Convert file type to the format specified file type
 def converter(text_string,outgoing_format):
@@ -110,4 +105,5 @@ if __name__ == '__main__':
 	
 	print("\n\n\n")
 	app.run(debug=True)
+    
     

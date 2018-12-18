@@ -10,7 +10,6 @@ app = Flask(__name__)
 
 '''
 RESTful API
-Use https://github.com/a-wakeel/flask-bp as a base
 Flask (Python) for the framework
 JSON payload for the POST request
 AssetID = Property.Ep
@@ -56,7 +55,7 @@ def converter(text_string,outgoing_format):
 
 	
 
-@app.route("/test", methods=["POST"])
+@app.route("/", methods=["POST"])
 def user_input():
 
 	try:

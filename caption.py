@@ -27,9 +27,10 @@ POST returns JSON
 
 
 #test string
-caps = '''100:00:01,500 --> 00:00:12,345 Small caption'''
 
-
+caps = '''1
+00:00:01,500 --> 00:00:12,345
+Small caption'''
 
 
 
@@ -56,7 +57,7 @@ def converter(text_string,outgoing_format):
 
 	
 
-@app.route("/test", methods=["POST"])
+@app.route("/", methods=["POST"])
 def user_input():
 
 	try:
@@ -65,27 +66,33 @@ def user_input():
 			data = request.get_json()
 			print("\n\nThis is the post request from user: {}\n\n".format(data))
 	
-			
-			assetid = data['AssetID']
-			incoming_format = data['InFormat'].lower()
-			outgoing_format = data['OutFormat'].lower()
-			text_string = data['TextString']
+			try:
+				assetid = data['AssetID']
+				incoming_format = data['InFormat'].lower()
+				outgoing_format = data['OutFormat'].lower()
+				text_string = data['TextString']
+			except (ValueError,KeyError):
+				return jsonify({"response":"Missing data"}) 
 
 
 			if assetid and incoming_format and outgoing_format and text_string:
 				# try:
+
 				format_type = format_check(text_string)
+				print("format_type: {}".format(format_type))
+				#do checks to make sure incoming_format and outgoing format is of three types srt,dfxp or scc
 				if format_type == incoming_format:
-					print("Matched")
+					
 					converted = converter(text_string,outgoing_format)
+					print("Converted: {} in {}".format(converted,outgoing_format))
 
 				
-				print("format_type: {}".format(format_type))
-				#return jsonify({"AssetID": assetid,'InFormat': incoming_format,'TextString':text_string,'OutFormat': outgoing_format})
+				
+				
 				#return "<h1> AssetID: {} Format: {} TextString: {}".format(assetid,outgoing_format,text_string)
 				return jsonify({"AssetID": assetid,'Format': outgoing_format,'TextString':text_string})
 
-			 
+		
 		
 				# except Exception:
 				# 	return "\nError with text string format type it doesnt exist\n"

@@ -51,11 +51,11 @@ def converter(text_string,outgoing_format):
 	
 	return {
 		'srt': SAMIWriter().write(SRTReader().read(text_string)),
-		'dfxp': SAMIWriter().write(DFXPReader().read(caps)),
-		'scc':SAMIWriter().write(SCCReader().read(caps))
+		'dfxp': SAMIWriter().write(DFXPReader().read(text_string)),
+		'scc':SAMIWriter().write(SCCReader().read(text_string))
 	}.get(outgoing_format)()
 
-	pass
+	
 
 @app.route("/test", methods=["POST"])
 def user_input():

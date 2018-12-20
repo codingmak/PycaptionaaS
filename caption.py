@@ -1,10 +1,6 @@
 from flask import Flask,request,jsonify
 
-from pycaption import detect_format, SRTReader, DFXPReader, SCCReader,SAMIWriter
-
-
-app = Flask(__name__)
-
+from pycaption import detect_format, SRTReader, DFXPReader, SCCReader,SAMIWriter,CaptionConverter,DFXPWriter,SCCWriter,SRTWriter
 
 '''
 RESTful API
@@ -21,36 +17,54 @@ POST returns JSON
 ‘TextString’ = converted closed captions
 '''
 
+app = Flask(__name__)
 
-#test string
-
-caps = '''1
-00:00:01,500 --> 00:00:12,345
-Small caption'''
-
-
+formats = ['scc','srt','scc']
 
 #Detects format
-def format_check(text):
-    reader = detect_format(text)
+def format_check(text_string):
+    reader = detect_format(text_string)
     if reader:
-        if SRTReader().detect(text):
+        if SRTReader().detect(text_string):
             return "srt"
-        elif DFXPReader().detect(text):
+        elif DFXPReader().detect(text_string):
             return "dfxp"
-        elif SCCReader().detect(text):
+        elif SCCReader().detect(text_string):
             return "scc"
+        else:
+        	return None
+
+def detect_reader(text_string):
+	format_type = format_check(text_string)
+	if format_type == 'srt':
+		return SRTReader()
+	elif format_type == 'dfxp':
+		return DFXPReader()
+	elif format_type == 'scc':
+		return SCCReader()
+	else:
+		return None
+	
 
 #Convert file type to the format specified file type
-def converter(text_string,outgoing_format):
-	
-	return {
-		'srt': SAMIWriter().write(SRTReader().read(text_string)),
-		'dfxp': SAMIWriter().write(DFXPReader().read(text_string)),
-		'scc':SAMIWriter().write(SCCReader().read(text_string))
-	}.get(outgoing_format)()
+def convert(text_string,outgoing_format):
 
+	converter = CaptionConverter()
+	formatted = detect_reader(text_string)
 	
+	print("{} this is it".format(formatted))
+
+	converter.read(text_string, formatted)
+	if outgoing_format == 'srt':
+		return converter.write(SRTWriter())	
+	elif outgoing_format == 'dfxp':
+		return converter.write(DFXPWriter())
+	elif outgoing_format == 'scc':
+		return converter.write(SCCWriter())
+	else:
+		return None
+
+
 
 @app.route("/", methods=["POST"])
 def user_input():
@@ -65,35 +79,34 @@ def user_input():
 				assetid = data['AssetID']
 				incoming_format = data['InFormat'].lower()
 				outgoing_format = data['OutFormat'].lower()
-				text_string = data['TextString']
+				#kind of cheated here but just wanted to make sure the conversion worked properly
+				text_string = data['TextString'].split('r')
+				
+				text_string = "\n".join(text_string)
+				#############################################################################
 			except (ValueError,KeyError):
 				return jsonify({"response":"Missing data"}) 
 
+	
+		
+			if len(str(assetid)) == 10 and "." in assetid[6] and incoming_format in formats:
 
-			if assetid and incoming_format and outgoing_format and text_string:
-				# try:
-
+				
 				format_type = format_check(text_string)
+				
 				print("format_type: {}".format(format_type))
-				#do checks to make sure incoming_format and outgoing format is of three types srt,dfxp or scc
+			#do checks to make sure incoming_format and outgoing format is of three types srt,dfxp or scc					
+
+				
 				if format_type == incoming_format:
-					
-					converted = converter(text_string,outgoing_format)
-					print("Converted: {} in {}".format(converted,outgoing_format))
+				
+					converted = convert(text_string,outgoing_format)
+				
 
-				
-				
-				
-				#return "<h1> AssetID: {} Format: {} TextString: {}".format(assetid,outgoing_format,text_string)
-				return jsonify({"AssetID": assetid,'Format': outgoing_format,'TextString':text_string})
-
+					return jsonify({"AssetID": assetid,'Format': outgoing_format,'TextString':converted})
 		
-		
-				# except Exception:
-				# 	return "\nError with text string format type it doesnt exist\n"
-		
-	except (ValueError,KeyError, TypeError) as e:
-		print("Failed: ", e)
+	except:
+		return jsonify({"response":"Failed request"})
  
 
 

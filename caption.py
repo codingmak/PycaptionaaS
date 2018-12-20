@@ -28,7 +28,7 @@ caps = '''1
 00:00:01,500 --> 00:00:12,345
 Small caption'''
 
-
+list_of_formats = ["srt","dfxp","scc"]
 
 #Detects format
 def format_check(text):
@@ -70,21 +70,26 @@ def user_input():
 				return jsonify({"response":"Missing data"}) 
 
 
+
 			if assetid and incoming_format and outgoing_format and text_string:
-				# try:
+				print("{} asset id".format(assetid))
+				# make sure that the format is the same
+				if len(str(assetid)) == 10 and "." in assetid[6]:
 
-				format_type = format_check(text_string)
-				print("format_type: {}".format(format_type))
-				#do checks to make sure incoming_format and outgoing format is of three types srt,dfxp or scc
-				if format_type == incoming_format:
-					
-					converted = converter(text_string,outgoing_format)
-					print("Converted: {} in {}".format(converted,outgoing_format))
+					format_type = format_check(text_string)
+					print("format_type: {}".format(format_type))
+					#do checks to make sure incoming_format and outgoing format is of three types srt,dfxp or scc
+					if format_type == incoming_format:
+						if outgoing_format in list_of_formats:
+							converted = converter(text_string,outgoing_format)
+							print("Converted: {} in {}".format(converted,outgoing_format))
+							return jsonify({"AssetID": assetid,'Format': outgoing_format,'TextString':text_string})
+							
+						else:
+							return jsonify({"response":"Outgoing format is not supported or does not exist"})
 
 				
-				
-				
-				#return "<h1> AssetID: {} Format: {} TextString: {}".format(assetid,outgoing_format,text_string)
+				#Need to nest this in 4th if statement
 				return jsonify({"AssetID": assetid,'Format': outgoing_format,'TextString':text_string})
 
 		
@@ -92,8 +97,8 @@ def user_input():
 				# except Exception:
 				# 	return "\nError with text string format type it doesnt exist\n"
 		
-	except (ValueError,KeyError, TypeError) as e:
-		print("Failed: ", e)
+	except:
+		return jsonify({"response":"Failed Request"})
  
 
 

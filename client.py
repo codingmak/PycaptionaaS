@@ -6,7 +6,7 @@ text = """1
 Small caption
 """
 
-with open('file.srt','r') as f:
+with open(input("Enter file: "),'r') as f:
 	content = f.read()
 
 content = content.split(' \n')

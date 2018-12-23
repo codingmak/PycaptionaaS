@@ -79,8 +79,8 @@ def user_input():
 				assetid = data['AssetID']
 				incoming_format = data['InFormat'].lower()
 				outgoing_format = data['OutFormat'].lower()
-				#kind of cheated here but just wanted to make sure the conversion worked properly
-				text_string = data['TextString'].split('r')
+			
+				text_string = data['TextString'].split('n')
 				
 				text_string = "\n".join(text_string)
 				#############################################################################
@@ -117,6 +117,4 @@ if __name__ == '__main__':
 	
 	
 	print("\n\n\n")
-	app.run(debug=True)
-    
-    
+app.run(debug=True)

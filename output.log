@@ -1,0 +1,18 @@
+2018-12-30 14:36:35,987:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+2018-12-30 14:36:36,002:werkzeug: * Restarting with inotify reloader
+2018-12-30 14:36:36,343:werkzeug: * Debugger is active!
+2018-12-30 14:36:36,343:werkzeug: * Debugger PIN: 178-106-116
+2018-12-30 14:36:40,535:root:
+
+POST request from 127.0.0.1: {'AssetID': '123456.123', 'InFormat': 'srt', 'OutFormat': 'scc', 'TextString': '1!@#$%00:00:01,500 --> 00:00:12,345!@#$%Small caption'}
+
+
+2018-12-30 14:36:40,535:__main__:format_type: srt
+2018-12-30 14:36:40,536:werkzeug:127.0.0.1 - - [30/Dec/2018 14:36:40] "POST / HTTP/1.1" 200 -
+2018-12-30 14:36:58,517:root:
+
+POST request from 127.0.0.1: {'AssetID': '123456.123', 'InFormat': 'srt', 'OutFormat': 'scc', 'TextString': '1!@#$%00:00:01,500 --> 00:00:12,345!@#$%Small caption'}
+
+
+2018-12-30 14:36:58,517:__main__:format_type: srt
+2018-12-30 14:36:58,518:werkzeug:127.0.0.1 - - [30/Dec/2018 14:36:58] "POST / HTTP/1.1" 200 -

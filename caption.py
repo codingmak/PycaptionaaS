@@ -95,7 +95,7 @@ def user_input():
 				text_string = data['TextString'].split(pattern)
 				
 				text_string = "\n".join(text_string)
-				#############################################################################
+				
 			except (ValueError,KeyError):
 				return jsonify({"response":"Missing data"}) 
 
